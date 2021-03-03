@@ -1,3 +1,5 @@
+const db = require("../../data/db-config")
+
 function find() { // EXERCISE A
   /*
     1A- Study the SQL query below running it in SQLite Studio against `data/schemes.db3`.
@@ -15,9 +17,20 @@ function find() { // EXERCISE A
     2A- When you have a grasp on the query go ahead and build it in Knex.
     Return from this function the resulting dataset.
   */
+ return db("schemes as sc")
+  .leftJoin("steps as st", "sc.scheme_id", "st.scheme_id")
+  .groupBy("sc.scheme_id")
+  .orderBy("sc.scheme_id")
+  .select("sc.*")
+  .count("st.step_id as number_of_steps")
 }
 
 function findById(scheme_id) { // EXERCISE B
+  return db("schemes as sc")
+    .innerJoin("steps as st", "sc.scheme_id", "st.scheme_id")
+    .where("sc.scheme_id", 7)
+    .orderBy("st.step_number")
+    .select("sc.scheme_id", "sc.scheme_name", "st.*")
   /*
     1B- Study the SQL query below running it in SQLite Studio against `data/schemes.db3`:
 
@@ -86,6 +99,12 @@ function findById(scheme_id) { // EXERCISE B
 }
 
 function findSteps(scheme_id) { // EXERCISE C
+  return db("steps as st")
+    .leftJoin("schemes as sc", "sc.scheme_id", "st.scheme_id")
+    .where("st.scheme_id", scheme_id)
+    .orderBy("st.step_number")
+    .select("st.*", "sc.scheme_name")
+
   /*
     1C- Build a query in Knex that returns the following data.
     The steps should be sorted by step_number, and the array
